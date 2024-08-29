@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#chatbot-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+}
+
+#chatbot-response {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    text-align: left;
+    font-size: 14px;
+}
+
+#user-input {
+    width: 100%;
+    height: 50px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#submit-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#submit-button:hover {
+    background-color: #0056b3;
+}
+
+
+    </style>
+
+
+    <title>Chatbot</title>
+</head>
+<body>
+   <div id="chatbot-container">
+        <h1>Chatbot</h1>
+        <div id="chatbot-response"></div>
+        <textarea id="user-input" placeholder="Type your message..."></textarea>
+        <div id='chat-output'></div>
+        <button id="submit-button">Send</button>
+
+    </div>
+<script language="javascript">
+document.getElementById("submit-button").addEventListener("click", function() {
+    const userInput = document.getElementById("user-input").value;
+
+    // Add the user's input to the chat
+    const chatContainer = document.getElementById("chatbot-response");
+    const userMessage = document.createElement("p");
+    userMessage.textContent = "You: " + userInput;
+    chatContainer.appendChild(userMessage);
+
+    fetch("/process", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ user_input: userInput })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Create a new paragraph for the bot's response
+        const botMessage = document.createElement("p");
+
+        // Check if a summary is provided
+        if (data.summary) {
+            botMessage.textContent = "Bot: " + data.summary;
+        } else {
+            botMessage.textContent = "Bot: " + "Sorry, something went wrong. Please try again.";
+        }
+
+        // Append the bot's response to the chat
+        chatContainer.appendChild(botMessage);
+
+        // Scroll to the latest message
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent = "An error occurred.";
+        chatContainer.appendChild(errorMessage);
+    });
+
+    // Clear the input field
+    document.getElementById("user-input").value = "";
+});
+</script>
+
+</body>
+</html>

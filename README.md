@@ -1,2 +1,2 @@
 # spacybot
-entity extration proof of concept 
+workflow with entity extration proof of concept 

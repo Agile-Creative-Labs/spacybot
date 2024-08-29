@@ -9,7 +9,7 @@ nlp = spacy.load('en_core_web_sm')
 
 # Define conversation flow
 conversation_flow = [
-    {"key": "name", "message": "Nice to meet you, ! Can you tell me about your skills?"},
+    {"key": "name", "message": "Nice to meet you! Can you tell me about your skills?"},
     {"key": "skills", "message": "Great! Now, could you describe your work experience?"},
     {"key": "experience", "message": "Thanks! Finally, what is your educational background?"},
     {"key": "education", "message": "Thank you! Here's a summary of the information you've provided:"}
@@ -30,7 +30,6 @@ def extract_entities(text):
 @app.route('/')
 def index():
     session.clear()
-    #session['step_index'] = 0
     return render_template('index.html')
 
 @app.route('/process', methods=['POST'])
@@ -59,13 +58,13 @@ def process_step():
     
     elif step_key == "education":
         session['education'] = entities.get('EDUCATION', user_input)
-        # Build summary string after the last step
+        # Build a more conversational summary
         summary_text = (
-            "Thank you! Here's a summary of the information you've provided:\n\n"
-            f"**Name:** {session.get('name', 'N/A')}\n"
-            f"**Skills:** {session.get('skills', 'N/A')}\n"
-            f"**Experience:** {session.get('experience', 'N/A')}\n"
-            f"**Education:** {session.get('education', 'N/A')}"
+            f"Thank you, {session.get('name', 'User')}! Here’s a summary of what you’ve shared with me:\n\n"
+            f"**Skills:** {session.get('skills', 'Not specified')}\n"
+            f"**Experience:** {session.get('experience', 'Not specified')}\n"
+            f"**Education:** {session.get('education', 'Not specified')}\n\n"
+            "If you’d like to add more details or make any changes, just let me know!"
         )
         response_message = summary_text
         session.clear()  # Clear session after summary
